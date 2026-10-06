@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Resume Agent</title>
+    <title>AI Resume Agent (Roman Urdu & English)</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -79,18 +79,18 @@
 
 <div class="container">
     <h2>AI Resume Optimizer Agent</h2>
-    <p class="subtitle">Hosted on GitHub Pages & Powered by Hugging Face</p>
+    <p class="subtitle">Roman Urdu & English Support</p>
     
     <label for="apiKey">Hugging Face API Key:</label>
     <input type="password" id="apiKey" placeholder="Enter your hf_... token here">
 
-    <label for="resumeText">Paste Your Resume Details / Draft:</label>
-    <textarea id="resumeText" rows="6" placeholder="Paste your education, skills, experience, or raw points here..."></textarea>
+    <label for="resumeText">Apna Resume ya Experience yahan paste karein:</label>
+    <textarea id="resumeText" rows="6" placeholder="Misal: Mainay data entry aur Excel ka kaam kiya hai, isko behtar bana do..."></textarea>
 
-    <button onclick="runResumeAgent()">Run AI Agent</button>
+    <button onclick="runResumeAgent()">AI Agent Chalayein</button>
 
-    <label>Agent Response:</label>
-    <div id="output" class="output-box">Your optimized resume feedback will appear here...</div>
+    <label>Agent ka Jawab:</label>
+    <div id="output" class="output-box">Aapka result yahan show hoga...</div>
 </div>
 
 <script>
@@ -105,16 +105,16 @@
         }
 
         if (!resumeText) {
-            outputDiv.innerText = "Please paste some resume text first.";
+            outputDiv.innerText = "Barah-e-karam pehle kuch text ya resume details enter karein.";
             return;
         }
 
-        outputDiv.innerText = "Agent is working on your resume... Please wait.";
+        outputDiv.innerText = "Agent kaam kar raha hai... Barah-e-karam intezar karein.";
 
-        // Free serverless model endpoint on Hugging Face
         const modelURL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2";
 
-        const prompt = `[INST] You are an expert professional resume writer. Review the following resume details and provide clear, high-impact bullet points and structured improvements to make it professional:
+        // Updated system instructions to reply in Roman Urdu/English as requested
+        const prompt = `[INST] You are an expert professional resume writer and career coach. The user is writing in Roman Urdu/English. Understand their input and reply in helpful, professional Roman Urdu (with English professional terms where needed), giving clear suggestions and improved bullet points for their resume:
 
 ${resumeText} [/INST]`;
 
@@ -127,7 +127,7 @@ ${resumeText} [/INST]`;
                 },
                 body: JSON.stringify({
                     inputs: prompt,
-                    parameters: { max_new_tokens: 500, temperature: 0.7 }
+                    parameters: { max_new_tokens: 600, temperature: 0.7 }
                 })
             });
 
