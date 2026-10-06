@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Agent (Roman Urdu & English)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 650px;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin: auto;
+        }
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        p.subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-top: 15px;
+            color: #34495e;
+        }
+        input[type="password"], textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 6px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        .output-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 6px;
+            white-space: pre-wrap;
+            min-height: 120px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>AI Resume Optimizer Agent</h2>
+    <p class="subtitle">Roman Urdu & English Support</p>
+    
+    <label for="apiKey">Hugging Face API Key:</label>
+    <input type="password" id="apiKey" placeholder="Enter your hf_... token here">
+
+    <label for="resumeText">Apna Resume ya Experience yahan paste karein:</label>
+    <textarea id="resumeText" rows="6" placeholder="Misal: Mainay data entry aur Excel ka kaam kiya hai, isko behtar bana do..."></textarea>
+
+    <button onclick="runResumeAgent()">AI Agent Chalayein</button>
+
+    <label>Agent ka Jawab:</label>
+    <div id="output" class="output-box">Aapka result yahan show hoga...</div>
+</div>
+
+<script>
+    async function runResumeAgent() {
+        const apiKey = document.getElementById('apiKey').value.trim();
+        const resumeText = document.getElementById('resumeText').value.trim();
+        const outputDiv = document.getElementById('output');
+
+        if (!apiKey) {
+            outputDiv.innerText = "Please enter your Hugging Face API key.";
+            return;
+        }
+
+        if (!resumeText) {
+            outputDiv.innerText = "Barah-e-karam pehle kuch text ya resume details enter karein.";
+            return;
+        }
+
+        outputDiv.innerText = "Agent kaam kar raha hai... Barah-e-karam intezar karein.";
+
+        const modelURL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2";
+
+        // Updated system instructions to reply in Roman Urdu/English as requested
+        const prompt = `[INST] You are an expert professional resume writer and career coach. The user is writing in Roman Urdu/English. Understand their input and reply in helpful, professional Roman Urdu (with English professional terms where needed), giving clear suggestions and improved bullet points for their resume:
+
+${resumeText} [/INST]`;
+
+        try {
+            const response = await fetch(modelURL, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${apiKey}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    inputs: prompt,
+                    parameters: { max_new_tokens: 600, temperature: 0.7 }
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.error) {
+                outputDiv.innerText = "API Error: " + data.error;
+            } else if (Array.isArray(data) && data[0].generated_text) {
+                let result = data[0].generated_text;
+                if (result.includes("[/INST]")) {
+                    result = result.split("[/INST]")[1].trim();
+                }
+                outputDiv.innerText = result;
+            } else {
+                outputDiv.innerText = JSON.stringify(data, null, 2);
+            }
+        } catch (error) {
+            outputDiv.innerText = "Network Error: " + error.message;
+        }
+    }
+</script>
+
+</body>
+</html>
